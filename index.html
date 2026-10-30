@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maryam &amp; Matcha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --cream: #FFF4DC;
+    --matcha: #8DD14F;
+    --deep: #1E3A12;
+    --pink: #FF8FB1;
+    --lav: #B9A2FF;
+    --butter: #FFE066;
+    --ink: #1E3A12;
+    --white: #FFFFFF;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* dark mode keeps the bright colour blocks, only the base gets darker */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --cream: #15240D; --ink: #FFF4DC; --white: #22351A; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --cream: #15240D; --ink: #FFF4DC; --white: #22351A; color-scheme: dark; }
+
+html { overflow-x: hidden; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 80px); }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--cream); }
+h1, h2, h3 { font-family: "Bricolage Grotesque", "Arial Black", sans-serif; margin: 0; line-height: 0.95; letter-spacing: -0.02em; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, .flip:focus-visible { outline: 3px solid var(--lav); outline-offset: 4px; }
+
+/* ---------- custom cursor ---------- */
+.cursor {
+    position: fixed; top: 0; left: 0; z-index: 100;
+    width: 22px; height: 22px; margin: -11px 0 0 -11px;
+    border-radius: 50%; background: var(--matcha);
+    pointer-events: none; mix-blend-mode: multiply;
+    transition: width .25s, height .25s, margin .25s, background .25s;
+    display: none;
+    font: 700 0.75rem "Bricolage Grotesque", sans-serif; color: var(--deep);
+    align-items: center; justify-content: center;
+}
+.has-cursor .cursor { display: flex; }
+.has-cursor, .has-cursor a, .has-cursor button, .has-cursor .flip { cursor: none; }
+.cursor.big { width: 74px; height: 74px; margin: -37px 0 0 -37px; background: var(--butter); mix-blend-mode: normal; opacity: 0.85; }
+
+/* ---------- nav ---------- */
+nav {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 16px clamp(18px, 4vw, 48px);
+    background: var(--cream);
+}
+.logo { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1.6rem; text-decoration: none; }
+.logo span { color: var(--matcha); }
+.links { display: flex; gap: 6px; flex-wrap: wrap; }
+.links a {
+    text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 999px;
+    border: 2px solid var(--ink); transition: background .2s, color .2s, transform .2s;
+}
+.links a:hover { background: var(--matcha); color: var(--deep); transform: rotate(-3deg); }
+
+/* ---------- hero ---------- */
+.hero {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; align-items: center;
+    padding: 40px clamp(18px, 4vw, 48px) 70px;
+}
+.big-word { font-size: clamp(4.5rem, 17vw, 13rem); font-weight: 800; line-height: 0.85; color: var(--matcha); display: flex; }
+.big-word span { display: inline-block; transition: transform .25s cubic-bezier(.3, 1.8, .5, 1), color .2s; }
+.big-word span:hover { transform: translateY(-18px) rotate(-8deg); color: var(--pink); }
+.big-word span:nth-child(even):hover { transform: translateY(-12px) rotate(9deg); color: var(--lav); }
+.hero .tag { font-family: "Bricolage Grotesque", sans-serif; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; margin: 10px 0 18px; }
+.hero p { max-width: 44ch; margin: 0 0 22px; }
+.chips-label { font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+    font: 600 1rem "Instrument Sans", sans-serif; padding: 10px 18px; border-radius: 999px;
+    border: 2px solid var(--deep); background: var(--white); color: var(--ink); cursor: pointer;
+    transition: transform .2s, background .2s;
+}
+.chip:hover { transform: translateY(-3px); }
+.chip.on { background: var(--deep); color: #FFF4DC; }
+
+/* glass */
+.glass-wrap { display: grid; place-items: center; }
+.glass {
+    position: relative; width: min(240px, 60vw); aspect-ratio: 3 / 4;
+    border: 5px solid var(--deep); border-top: none; border-radius: 0 0 28px 28px;
+    overflow: hidden; background: rgba(255, 255, 255, 0.5);
+    transform: rotate(4deg); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1);
+}
+.glass:hover { transform: rotate(-4deg) scale(1.04); }
+.layer { position: absolute; left: 0; right: 0; transition: background .6s, height .6s; }
+.syrup { bottom: 0; height: 18%; background: var(--syrup, #FFF4DC); }
+.milk { bottom: 18%; height: 34%; background: #FFFBEF; }
+.tea { bottom: 52%; height: 30%; background: #6FAE2F; }
+.tea::before {
+    content: ""; position: absolute; top: -10px; left: -10%; width: 120%; height: 20px;
+    background: radial-gradient(circle at 10px 10px, #6FAE2F 10px, transparent 11px) repeat-x;
+    background-size: 26px 20px; animation: wave 3s linear infinite;
+}
+@keyframes wave { to { transform: translateX(26px); } }
+.ice { position: absolute; width: 46px; height: 46px; border: 3px solid rgba(255, 255, 255, 0.9); border-radius: 8px; background: rgba(255, 255, 255, 0.35); }
+.ice.a { top: 34%; left: 16%; transform: rotate(14deg); }
+.ice.b { top: 58%; left: 54%; transform: rotate(-10deg); }
+.straw { position: absolute; width: 16px; height: 190px; background: var(--pink); border: 3px solid var(--deep); border-radius: 8px; top: -60px; right: 26%; transform: rotate(12deg); z-index: -1; }
+.glass-holder { position: relative; padding-top: 60px; isolation: isolate; }
+.glass-name { text-align: center; font-weight: 700; margin-top: 16px; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.3rem; }
+
+/* ---------- marquee ---------- */
+.marquee { background: var(--deep); color: var(--matcha); overflow: hidden; padding: 18px 0; transform: rotate(-1.5deg); margin: 0 -20px; }
+.marquee-track { display: flex; width: max-content; animation: slide 22s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee span { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: clamp(1.8rem, 4vw, 3rem); padding-right: 40px; white-space: nowrap; }
+.marquee span i { font-style: normal; color: var(--pink); }
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* ---------- sections ---------- */
+section.block { padding: 90px clamp(18px, 4vw, 48px); }
+.label { display: inline-block; font-weight: 600; border: 2px solid currentColor; padding: 4px 14px; border-radius: 999px; margin-bottom: 18px; }
+
+/* story */
+.story { background: var(--pink); color: #2A1220; }
+.story-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 50px; max-width: 1150px; margin: 0 auto; }
+.story h2 { font-size: clamp(3rem, 8vw, 6rem); position: sticky; top: 110px; }
+.story p { margin: 0 0 1.2em; max-width: 60ch; }
+.quote { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3.4vw, 2.4rem); line-height: 1.15; background: var(--butter); padding: 26px 28px; border-radius: 24px; transform: rotate(-2deg); margin: 30px 0; transition: transform .3s; }
+.quote:hover { transform: rotate(1deg) scale(1.02); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 1150px; margin: 60px auto 0; }
+.tile { padding: 24px; border-radius: 24px; border: 3px solid #2A1220; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.tile:nth-child(1) { background: var(--matcha); }
+.tile:nth-child(2) { background: var(--lav); }
+.tile:nth-child(3) { background: var(--butter); }
+.tile:nth-child(4) { background: #FFF4DC; }
+.tile:hover { transform: translateY(-8px) rotate(-3deg); }
+.tile:nth-child(even):hover { transform: translateY(-8px) rotate(3deg); }
+.tile h3 { font-size: 1.6rem; margin-bottom: 8px; }
+.tile p { margin: 0; }
+.taught { font-size: clamp(2rem, 5vw, 3.2rem); max-width: 1150px; margin: 80px auto 0; }
+
+/* method */
+.method { background: var(--deep); color: #FFF4DC; }
+.method h2 { font-size: clamp(3rem, 8vw, 6rem); color: var(--matcha); margin-bottom: 40px; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border-top: 3px solid var(--matcha); }
+.step { padding: 26px 22px 30px; border-right: 3px solid var(--matcha); transition: background .3s, color .3s; }
+.step:last-child { border-right: none; }
+.step:hover { background: var(--matcha); color: var(--deep); }
+.step .word { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 3rem; display: block; margin-bottom: 10px; transition: transform .3s; }
+.step:hover .word { transform: translateX(8px) rotate(-4deg); }
+.step p { margin: 0; }
+
+/* recipes - flip cards */
+.recipes { background: var(--lav); color: #1C1238; }
+.recipes h2 { font-size: clamp(3rem, 8vw, 6rem); }
+.recipes .hint { margin: 10px 0 40px; font-weight: 600; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; }
+.flip { perspective: 1200px; height: 400px; }
+.inner { position: relative; width: 100%; height: 100%; transition: transform .7s cubic-bezier(.3, 1.3, .5, 1); transform-style: preserve-3d; }
+@media (hover: hover) { .flip:hover .inner { transform: rotateY(180deg); } }
+.flip.flipped .inner { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 28px; border: 3px solid #1C1238; padding: 26px; display: flex; flex-direction: column; }
+.front { justify-content: space-between; }
+.front h3 { font-size: 2.4rem; }
+.front .sub { font-weight: 600; }
+.front .dot { width: 110px; height: 110px; border-radius: 50%; border: 3px solid #1C1238; align-self: flex-end; }
+.back { background: #FFF4DC; transform: rotateY(180deg); font-size: 0.98rem; overflow-y: auto; color: #1C1238; }
+.back h4 { margin: 0 0 4px; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.1rem; }
+.back ul, .back ol { margin: 0 0 14px; padding-left: 20px; }
+.c1 .front { background: var(--matcha); } .c1 .dot { background: #6FAE2F; }
+.c2 .front { background: var(--pink); }   .c2 .dot { background: linear-gradient(#6FAE2F 50%, #FF5C8A 50%); }
+.c3 .front { background: var(--butter); } .c3 .dot { background: linear-gradient(#6FAE2F 50%, #B9A2FF 50%); }
+.c4 .front { background: #FFF4DC; }       .c4 .dot { background: radial-gradient(circle at 40% 40%, #fff 30%, #D9A066 31%); }
+
+/* photos */
+.photos { background: var(--butter); color: var(--deep); }
+.photos h2 { font-size: clamp(3rem, 8vw, 6rem); margin-bottom: 40px; }
+.polaroids { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 36px; }
+.polaroid { background: #fff; padding: 14px 14px 18px; margin: 0; box-shadow: 0 16px 30px -18px rgba(30, 58, 18, 0.7); transition: transform .2s ease-out; will-change: transform; }
+.polaroid:nth-child(1) { --r: -3deg; } .polaroid:nth-child(2) { --r: 2deg; } .polaroid:nth-child(3) { --r: -1deg; }
+.polaroid { transform: rotate(var(--r, 0deg)); }
+.polaroid .img { aspect-ratio: 4 / 5; background: repeating-linear-gradient(45deg, #EAF6D9 0 14px, #DDF0C4 14px 28px); display: grid; place-items: center; font-weight: 600; color: #4A6B2E; }
+.polaroid img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.polaroid figcaption { text-align: center; margin-top: 10px; font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; color: var(--deep); }
+
+/* footer */
+footer { background: var(--matcha); color: var(--deep); padding: 50px clamp(18px, 4vw, 48px); overflow: hidden; }
+footer .sig { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: clamp(4rem, 20vw, 16rem); line-height: 0.8; display: flex; }
+footer .sig span { display: inline-block; transition: transform .25s cubic-bezier(.3, 1.8, .5, 1); }
+footer .sig span:hover { transform: translateY(-20px) rotate(6deg); }
+
+/* scroll reveal (only when JS is on) */
+.js .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s, transform .7s; }
+.js .reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; padding-top: 20px; }
+    .story-grid { grid-template-columns: 1fr; gap: 20px; }
+    .story h2 { position: static; }
+    .step { border-right: none; border-bottom: 3px solid var(--matcha); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+    <a href="#top" class="logo">maryam<span>.</span></a>
+    <div class="links">
+        <a href="#story">story</a>
+        <a href="#method">method</a>
+        <a href="#recipes">recipes</a>
+        <a href="#photos">photos</a>
+    </div>
+</nav>
+
+<main id="top">
+    <section class="hero">
+        <div>
+            <h1 class="big-word" aria-label="matcha">
+                <span>m</span><span>a</span><span>t</span><span>c</span><span>h</span><span>a</span>
+            </h1>
+            <p class="tag">is kind of my whole thing.</p>
+            <p>I make it by hand, one cup at a time. What started as a daily ritual in my kitchen turned into something I genuinely love. This is the story, the method, and the recipes behind it.</p>
+            <div class="chips-label">Build a cup, pick a flavour:</div>
+            <div class="chips">
+                <button class="chip on" data-color="#FFF4DC" data-name="OG matcha">OG</button>
+                <button class="chip" data-color="#FF5C8A" data-name="Strawberry matcha">Strawberry</button>
+                <button class="chip" data-color="#B9A2FF" data-name="Lavender matcha">Lavender</button>
+                <button class="chip" data-color="#D9A066" data-name="Maple matcha">Maple</button>
+            </div>
+        </div>
+        <div class="glass-wrap">
+            <div class="glass-holder">
+                <div class="straw"></div>
+                <div class="glass" id="glass">
+                    <div class="layer syrup"></div>
+                    <div class="layer milk"></div>
+                    <div class="layer tea"></div>
+                    <div class="ice a"></div>
+                    <div class="ice b"></div>
+                </div>
+                <div class="glass-name" id="glass-name">OG matcha</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>sift <i>&#10033;</i> whisk <i>&#10033;</i> pour <i>&#10033;</i> sip <i>&#10033;</i> repeat <i>&#10033;</i></span>
+            <span>sift <i>&#10033;</i> whisk <i>&#10033;</i> pour <i>&#10033;</i> sip <i>&#10033;</i> repeat <i>&#10033;</i></span>
+            <span>sift <i>&#10033;</i> whisk <i>&#10033;</i> pour <i>&#10033;</i> sip <i>&#10033;</i> repeat <i>&#10033;</i></span>
+            <span>sift <i>&#10033;</i> whisk <i>&#10033;</i> pour <i>&#10033;</i> sip <i>&#10033;</i> repeat <i>&#10033;</i></span>
+        </div>
+    </div>
+
+    <section class="block story" id="story">
+        <div class="story-grid">
+            <div><span class="label">01 / story</span><h2>why I started</h2></div>
+            <div class="reveal">
+                <p>Matcha started as just the thing I made for myself every day, the one part of a busy schedule where I slowed down and did something carefully with my hands. Sift the powder, heat the water to just the right temperature, whisk until it turns soft and foamy.</p>
+                <p>The more I made it, the more curious I got. I started experimenting: maple instead of sugar, a little lavender, fresh strawberry at the bottom of the glass, a cinnamon cold foam I kept adjusting until it finally tasted right. Every batch taught me something, and plenty of them went straight down the sink.</p>
+                <p>Before long I was making it for friends and family too.</p>
+                <div class="quote">Watching someone take their first sip of something I made from scratch is still my favourite part.</div>
+                <p>Making matcha taught me more than I expected: patience, paying attention to the small details, and not giving up when a recipe doesn't work the first time.</p>
+            </div>
+        </div>
+        <h3 class="taught">what it taught me</h3>
+        <div class="tiles">
+            <div class="tile reveal"><h3>patience</h3><p>Good matcha can't be rushed, and neither can getting a recipe right.</p></div>
+            <div class="tile reveal"><h3>detail</h3><p>Water temperature, ratios and timing all change how a cup tastes.</p></div>
+            <div class="tile reveal"><h3>experimenting</h3><p>Trying new flavours, keeping what works and learning from what doesn't.</p></div>
+            <div class="tile reveal"><h3>feedback</h3><p>Asking the people I make it for what they think, then making it better.</p></div>
+        </div>
+    </section>
+
+    <section class="block method" id="method">
+        <span class="label">02 / method</span>
+        <h2>how I make it</h2>
+        <div class="steps">
+            <div class="step reveal"><span class="word">sift</span><p>Matcha clumps easily, so it always goes through a small strainer first. No lumps, ever.</p></div>
+            <div class="step reveal"><span class="word">heat</span><p>Water around 75 to 80&deg;C, never boiling. Boiling water burns it and makes it bitter.</p></div>
+            <div class="step reveal"><span class="word">whisk</span><p>Fast, in a zig-zag "M" shape with a bamboo whisk until the top turns light and foamy.</p></div>
+            <div class="step reveal"><span class="word">pour</span><p>Sweetener first, then milk and ice, then the matcha poured slowly on top.</p></div>
+        </div>
+    </section>
+
+    <section class="block recipes" id="recipes">
+        <span class="label">03 / recipes</span>
+        <h2>my recipes</h2>
+        <p class="hint">Hover over a card (or tap it) to flip it.</p>
+        <div class="cards">
+            <div class="flip c1 reveal" tabindex="0">
+                <div class="inner">
+                    <div class="face front"><div><h3>everyday iced matcha</h3><p class="sub">where it all started</p></div><div class="dot"></div></div>
+                    <div class="face back">
+                        <h4>You need</h4>
+                        <ul><li>1 tsp matcha</li><li>60 ml warm water</li><li>180 ml milk of choice</li><li>Ice, sweetener to taste</li></ul>
+                        <h4>Make it</h4>
+                        <ol><li>Sift matcha, add water, whisk until foamy.</li><li>Fill a glass with ice, milk and sweetener.</li><li>Pour the matcha over the top.</li></ol>
+                    </div>
+                </div>
+            </div>
+            <div class="flip c2 reveal" tabindex="0">
+                <div class="inner">
+                    <div class="face front"><div><h3>strawberry matcha</h3><p class="sub">my favourite</p></div><div class="dot"></div></div>
+                    <div class="face back">
+                        <h4>You need</h4>
+                        <ul><li>3 to 4 strawberries</li><li>1 tsp sugar</li><li>Everyday matcha base</li></ul>
+                        <h4>Make it</h4>
+                        <ol><li>Mash strawberries with sugar in the glass.</li><li>Add ice and milk.</li><li>Top with whisked matcha and stir before drinking.</li></ol>
+                    </div>
+                </div>
+            </div>
+            <div class="flip c3 reveal" tabindex="0">
+                <div class="inner">
+                    <div class="face front"><div><h3>lavender matcha</h3><p class="sub">soft and floral</p></div><div class="dot"></div></div>
+                    <div class="face back">
+                        <h4>Lavender syrup</h4>
+                        <ul><li>1/2 cup water + 1/2 cup sugar</li><li>1 tbsp dried culinary lavender</li></ul>
+                        <h4>Make it</h4>
+                        <ol><li>Simmer water and sugar until dissolved.</li><li>Add lavender, steep 15 min, strain.</li><li>Use 1 tbsp syrup in the everyday matcha.</li></ol>
+                    </div>
+                </div>
+            </div>
+            <div class="flip c4 reveal" tabindex="0">
+                <div class="inner">
+                    <div class="face front"><div><h3>cinnamon cold foam</h3><p class="sub">took me the longest to get right</p></div><div class="dot"></div></div>
+                    <div class="face back">
+                        <h4>You need</h4>
+                        <ul><li>3 tbsp heavy cream</li><li>2 tbsp milk</li><li>1 tbsp maple or vanilla syrup</li><li>A pinch of cinnamon</li></ul>
+                        <h4>Make it</h4>
+                        <ol><li>Froth everything for about 20 seconds.</li><li>Spoon over any iced matcha.</li></ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block photos" id="photos">
+        <span class="label">04 / photos</span>
+        <h2>behind the cups</h2>
+        <div class="polaroids">
+            <figure class="polaroid"><div class="img">photo coming soon</div><figcaption>caption</figcaption></figure>
+            <figure class="polaroid"><div class="img">photo coming soon</div><figcaption>caption</figcaption></figure>
+            <figure class="polaroid"><div class="img">photo coming soon</div><figcaption>caption</figcaption></figure>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="sig" aria-label="Maryam"><span>M</span><span>a</span><span>r</span><span>y</span><span>a</span><span>m</span></div>
+</footer>
+
+<script>
+document.documentElement.classList.add("js");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// flavour chips change the drink in the glass
+const glass = document.getElementById("glass");
+document.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+        chip.classList.add("on");
+        glass.style.setProperty("--syrup", chip.dataset.color);
+        document.getElementById("glass-name").textContent = chip.dataset.name;
+    });
+});
+
+// tap / enter to flip recipe cards
+document.querySelectorAll(".flip").forEach(card => {
+    card.addEventListener("click", () => card.classList.toggle("flipped"));
+    card.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.classList.toggle("flipped"); }
+    });
+});
+
+// custom cursor (only with a mouse)
+if (matchMedia("(pointer: fine)").matches && !reduced) {
+    const cur = document.getElementById("cursor");
+    document.body.classList.add("has-cursor");
+    let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
+    addEventListener("mousemove", e => { x = e.clientX; y = e.clientY; });
+    (function loop() {
+        cx += (x - cx) * 0.2; cy += (y - cy) * 0.2;
+        cur.style.transform = `translate(${cx}px, ${cy}px)`;
+        requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll("a, button, .flip, .glass").forEach(el => {
+        el.addEventListener("mouseenter", () => {
+            cur.classList.add("big");
+            cur.textContent = el.classList.contains("flip") ? "flip" : el.classList.contains("glass") ? "sip" : "";
+        });
+        el.addEventListener("mouseleave", () => { cur.classList.remove("big"); cur.textContent = ""; });
+    });
+
+    // polaroids tilt towards the mouse
+    document.querySelectorAll(".polaroid").forEach(p => {
+        p.addEventListener("mousemove", e => {
+            const r = p.getBoundingClientRect();
+            const dx = (e.clientX - r.left) / r.width - 0.5;
+            const dy = (e.clientY - r.top) / r.height - 0.5;
+            p.style.transform = `perspective(700px) rotateY(${dx * 18}deg) rotateX(${-dy * 18}deg) scale(1.04)`;
+        });
+        p.addEventListener("mouseleave", () => { p.style.transform = ""; });
+    });
+}
+
+// fade things in as you scroll
+if ("IntersectionObserver" in window && !reduced) {
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(en => { if (en.isIntersecting) {
+            const el = en.target;
+            el.classList.add("in");
+            io.unobserve(el);
+            setTimeout(() => el.classList.remove("reveal", "in"), 800); // so hover effects work after
+        } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+} else {
+    document.querySelectorAll(".reveal").forEach(el => el.classList.add("in"));
+}
+</script>
+</body>
+</html>
